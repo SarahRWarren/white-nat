@@ -330,3 +330,36 @@ for(i in 1:length(brainwash_urls)){
 }
 
 brainwash_forum <- rbind(brainwash_forum, page_df)
+
+
+
+#CLEANING
+#Create an ID that matches all the post numbers from the forum. This way I can spot check if necessary. 
+ideology_forum <- ideology_forum %>% 
+  mutate(id = seq_along(user))
+
+#These posts caused the stringr functions below to hang and make R crash.
+ideology_forum_removed <- ideology_forum[-c(3294, 3481, 3552, 4102, 4308, 4434, 4908, 5015),]
+
+cleaning <- ideology_forum_removed %>% 
+  mutate(text_nore = stringr::str_replace_all(text, 
+                                              "Re: National Socialism",
+                                              ""),
+         text_noquote = stringr::str_replace_all(text_nore, 
+                                                 "Quote.(\\n)*.*(\\n)*((.*)|(\\n*))*\\n{2}",
+                                                 ""),
+         text_nobreak = stringr::str_replace_all(text_noquote,
+                                                 "\\c*",
+                                                 ""), 
+         text_nopunct = stringr::str_replace_all(text_nobreak,
+                                                 "[[:punct:]]*",
+                                                 ""),
+         length = str_count(text_nopunct, 
+                            "\\w+"))
+
+user_rank <- cleaning %>% 
+  count(user,
+        name = "n_posts",
+        sort = T) %>%  
+  mutate(rank = rank(-n_posts,
+                     ties.method = 'min'))
