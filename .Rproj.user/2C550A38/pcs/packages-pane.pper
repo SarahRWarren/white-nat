@@ -1,0 +1,7 @@
+{
+    "installOptions" : {
+        "installDependencies" : false,
+        "installFromRepository" : true,
+        "libraryPath" : "C:/Users/Oscar Wilde/OneDrive - Florida State University/Documents/R/win-library/4.0"
+    }
+}

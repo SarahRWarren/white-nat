@@ -1,0 +1,26 @@
+{
+    "id": "99C756C3",
+    "path": "~/white-nat/scrape.R",
+    "project_path": "scrape.R",
+    "type": "r_source",
+    "hash": "2777980793",
+    "contents": "",
+    "dirty": false,
+    "created": 1630705758721.0,
+    "source_on_save": false,
+    "relative_order": 1,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "91,45",
+        "scrollLine": "90"
+    },
+    "folds": "14|16|18|0|\n25|36|83|0|\n101|15|105|0|\n112|32|170|0|\n160|13|169|2|\n179|15|183|0|\n190|38|248|0|\n",
+    "lastKnownWriteTime": 1630712812,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1630712812872,
+    "read_only": false,
+    "read_only_alternatives": []
+}
