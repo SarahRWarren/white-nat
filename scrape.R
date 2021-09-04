@@ -70,7 +70,6 @@ for(i in 1:length(ideo_philo_urls)){
   
   page_user <- as.vector(page_user_prelim$user)
   
-  #as of 5/6/2019 this errors on the final loop because the last page only has 7 posts and the page_date and page_time. I have the following if condition to prevent the last loop from erroring. 
   if(i < 509){
     
     page_df <- data.frame(user = as.character(page_user),
@@ -157,7 +156,6 @@ for(i in 1:length(pos_wn_urls)){
   
   page_user <- as.vector(page_user_prelim$user)
   
-  #as of 5/6/2019 this errors on the final loop because the last page only has 7 posts and the page_date and page_time. I have the following if condition to prevent the last loop from erroring. 
   if(i < 22){
     
     page_df <- data.frame(user = as.character(page_user),
@@ -235,7 +233,6 @@ for(i in 1:length(conservative_urls)){
   
   page_user <- as.vector(page_user_prelim$user)
   
-  #as of 5/6/2019 this errors on the final loop because the last page only has 7 posts and the page_date and page_time. I have the following if condition to prevent the last loop from erroring. 
   if(i < 13){
     
     page_df <- data.frame(user = as.character(page_user),
@@ -319,7 +316,6 @@ for(i in 1:length(brainwash_urls)){
   
   page_user <- as.vector(page_user_prelim$user)
   
-  #as of 5/6/2019 this errors on the final loop because the last page only has 7 posts and the page_date and page_time. I have the following if condition to prevent the last loop from erroring. 
   if(i < 103){
     
     page_df <- data.frame(user = as.character(page_user),
