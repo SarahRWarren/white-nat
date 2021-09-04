@@ -93,6 +93,7 @@ page_df <- data.frame(user = as.character(page_user),
 
 ideology_forum <- rbind(ideology_forum, page_df)
 
+
 ##
 #generate a url for each page of the Positive WN thread
 pos_wn_urls <- c("https://www.stormfront.org/forum/t964243/")
