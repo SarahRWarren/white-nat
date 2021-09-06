@@ -7,6 +7,9 @@ library(rvest)
 library(tidyverse)
 ###LADIES
 #generate a url for each page of the National Socialism thread
+
+ua <- "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36"
+
 ladies_urls <- c("https://www.stormfront.org/forum/t528601/")
 
 #generate a url for each page 
@@ -22,7 +25,7 @@ ladies_forum <- data.frame(user = c(),
                              text = c())
 
 for(i in 1:length(ladies_urls)){
-  page <- read_html(url(ladies_urls[i]))
+  page <- read_html(url(ladies_urls[i]), user_agent(ua))
   
   #read the text from the posts 
   page_text_prelim <- page %>% 
@@ -88,6 +91,7 @@ page_df <- data.frame(user = as.character(page_user),
 
 
 ladies_forum <- rbind(ladies_forum, page_df)
+
 
 
 
