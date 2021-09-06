@@ -330,3 +330,8 @@ for(i in 1:length(brainwash_urls)){
 }
 
 brainwash_forum <- rbind(brainwash_forum, page_df)
+
+write_rds(ideology_forum, "data/unclean_natsoc.Rds")
+write_rds(brainwash_forum, "data/unclean_brainwash.Rds")
+write_rds(conservative_forum, "data/unclean_conservative.Rds")
+write_rds(pos_wn_forum, "data/unclean_pos_wn.Rds")
