@@ -93,9 +93,6 @@ ggsave("figs/ladies_frequency_length.png", width=20)
 
 
 
-
-
-
 ########ideology
 ip <- read_rds("data/ideo_philo.Rds")
 
@@ -233,8 +230,7 @@ ggplot(user_time, aes(x=ym, y=mean_length, fill=n_posts)) +
        x= "Year-Month",
        y="Average Length",
        fill = "Number of Posts")
-
-ggsave("figs/all_length_frequency.png", width=20)
+ggsave("figs/all_length_frequency.png", width=20, height = 15)
 
 ggplot(user_time, aes(x=ym, y=n_posts, fill=mean_length)) + 
   geom_col() + theme_bw() +
@@ -253,4 +249,58 @@ ggplot(user_time, aes(x=ym, y=n_posts, fill=mean_length)) +
        x= "Year-Month",
        y="Number of Posts",
        fill = "Average Length")
-ggsave("figs/all_frequency_length.png", width=20)
+ggsave("figs/all_frequency_length.png", width=20, height = 15)
+
+all_ym <- all %>% 
+  separate(date,
+           into = c('m', 'd', 'y'),
+           sep = '-',
+           remove = F) %>% 
+  mutate(date = as.Date(ISOdate(y, m, d)),
+         ym = paste0(y, "-", m))
+
+ggplot(all_ym, aes(x=ym, fill=forum)) +
+  geom_bar(alpha=0.5) +
+  theme_bw() + 
+  theme(strip.background = element_blank(),
+    strip.text.x = element_blank()) +
+  theme(axis.text.x = element_text(angle = 90)) +
+  geom_vline(xintercept = "2009-01", linetype="dashed", 
+             color = "black", size=1) +
+  geom_vline(xintercept = "2013-01", linetype="dashed", 
+             color = "black", size=1) +
+  geom_vline(xintercept = "2017-01", linetype="dotted", 
+             color = "black", size=1) +
+  geom_vline(xintercept = "2017-08", linetype="dotted", 
+             color = "black", size=1) +
+  geom_vline(xintercept = "2021-01", linetype="dashed", 
+             color = "black", size=1) +
+  labs(title = "Posts Over Time by Forum",
+       x= "Year-Month",
+       y="Number of Posts",
+       fill = "Forum")
+ggsave("figs/all_frequency_by_forum.png", width=25, height = 15)
+
+
+ggplot(all_ym, aes(x=ym, fill=forum)) +
+  geom_bar(alpha=0.5) +
+  theme_bw() + 
+  facet_grid(vars(forum)) +
+  theme(strip.background = element_blank(),
+        strip.text.x = element_blank()) +
+  theme(axis.text.x = element_text(angle = 90)) +
+  geom_vline(xintercept = "2009-01", linetype="dashed", 
+             color = "black", size=1) +
+  geom_vline(xintercept = "2013-01", linetype="dashed", 
+             color = "black", size=1) +
+  geom_vline(xintercept = "2017-01", linetype="dotted", 
+             color = "black", size=1) +
+  geom_vline(xintercept = "2017-08", linetype="dotted", 
+             color = "black", size=1) +
+  geom_vline(xintercept = "2021-01", linetype="dashed", 
+             color = "black", size=1) +
+  labs(title = "Posts Over Time by Forum",
+       x= "Year-Month",
+       y="Number of Posts",
+       fill = "Forum")
+ggsave("figs/all_frequency_wrap_forum.png", width=25, height = 15)
