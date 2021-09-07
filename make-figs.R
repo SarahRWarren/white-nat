@@ -10,7 +10,9 @@ white <- read_rds("data/clean_ladies_white.Rds") %>%
   mutate(forum = "Contribution to the White Race")
 
 ladies <- rbind(intro, preg, white)
+write_rds(ladies, "data/ladies.Rds")
 
+############################
 user_rank <- ladies %>%
   group_by(user) %>%
   summarise(n = n()) %>%
@@ -91,5 +93,86 @@ ggsave("figs/ladies_frequency_length.png", width=20)
 
 
 
-########ALL
 
+
+
+########ideology
+ip <- read_rds("data/ideo_philo.Rds")
+
+user_rank <- ip %>%
+  group_by(user) %>%
+  summarise(n = n()) %>%
+  subset(n > 1)
+
+##make figs
+ggplot(user_rank, aes(x=n, y=user)) + 
+  geom_col() + theme_bw() +
+  theme(axis.text = element_text(size=3)) +
+  scale_x_continuous(limit=c(0,450),
+                     breaks = c(0, 10, 20, 30, 40, 50, 100, 150, 200,
+                                250, 300, 350, 400, 450),
+                     expand = c(0,0)) +
+  labs(title = "Posts by User",
+       caption = "Posts by Username of Those Who Posted More than Once",
+       x= "Number of Posts",
+       y="Username")
+ggsave("figs/user_rank_ip.png", height=20)
+
+
+####################################
+user_time <- ip %>% 
+  separate(date,
+           into = c('m', 'd', 'y'),
+           sep = '-',
+           remove = F) %>% 
+  mutate(date = as.Date(ISOdate(y, m, d)),
+         ym = paste0(y, "-", m)) %>% 
+  group_by(user, ym) %>% 
+  add_count(user, 
+            name = "n_posts") %>% 
+  summarise(mean_length = mean(length),
+            n_posts = mean(n_posts)) %>% 
+  arrange(ym) %>% 
+  ungroup()
+
+ggplot(user_time, aes(x=ym, y=mean_length, fill=n_posts)) + 
+  geom_col() + theme_bw() +
+  theme(axis.text.x = element_text(angle = 90)) +
+  geom_vline(xintercept = "2009-01", linetype="dashed", 
+             color = "gray", size=1.5) +
+  geom_vline(xintercept = "2013-01", linetype="dashed", 
+             color = "gray", size=1.5) +
+  geom_vline(xintercept = "2016-12", linetype="dotted", 
+             color = "red", size=1.5) +
+  geom_vline(xintercept = "2017-08", linetype="dotted", 
+             color = "red", size=1.5) +
+  geom_vline(xintercept = "2021-01", linetype="dashed", 
+             color = "gray", size=1.5) +
+  labs(title = "Posts Per Month-Year",
+       x= "Year-Month",
+       y="Average Length",
+       fill = "Number of Posts")
+
+ggsave("figs/ip_length_frequency.png", width=20)
+
+
+
+ggplot(user_time, aes(x=ym, y=n_posts, fill=mean_length)) + 
+  geom_col() + theme_bw() +
+  theme(axis.text.x = element_text(angle = 90)) +
+  geom_vline(xintercept = "2009-01", linetype="dashed", 
+             color = "gray", size=1.5) +
+  geom_vline(xintercept = "2013-01", linetype="dashed", 
+             color = "gray", size=1.5) +
+  geom_vline(xintercept = "2016-12", linetype="dotted", 
+             color = "red", size=1.5) +
+  geom_vline(xintercept = "2017-08", linetype="dotted", 
+             color = "red", size=1.5) +
+  geom_vline(xintercept = "2021-01", linetype="dashed", 
+             color = "gray", size=1.5) +
+  labs(title = "Posts Per Month-Year",
+       x= "Year-Month",
+       y="Number of Posts",
+       fill = "Average Length")
+
+ggsave("figs/ip_frequency_length.png", width=20)
