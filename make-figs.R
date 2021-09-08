@@ -297,7 +297,7 @@ ggplot(all_ym, aes(x=ym, fill=forum)) +
              color = "black", size=1) +
   geom_vline(xintercept = "2017-08", linetype="dotted", 
              color = "black", size=1) +
-  geom_vline(xintercept = "2021-01", linetype="dashed", 
+  geom_vline(xintercept = "2021-01", linetype="dotted", 
              color = "black", size=1) +
   labs(title = "Posts Over Time by Forum",
        x= "Year-Month",
