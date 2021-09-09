@@ -1,15 +1,18 @@
 library(tidyverse)
 library(SnowballC)
 library(tidytext)
+library(textdata)
 library(qdap)
 library(Rcpp)
 data('Top200Words')
 
 ####more cleaning needed, better cleaning needed
 
-
-
 ladies <- read_rds("data/ladies.Rds")
+
+user_rank <- ladies %>%
+  group_by(user) %>%
+  summarise(n = n())
 
 unigram <- ladies %>% 
   mutate(text_clean = str_replace_all(text_nopunct, 
@@ -76,58 +79,46 @@ ggplot(unigram_200, aes(x=n, y=word, fill=n)) + geom_col() + theme_bw() +
        fill = "Frequency (High-Low)")
 ggsave("figs/unigram_ladies_200.png", height=12, width = 12)
 
+###tone
+unigram_nrc <- get_sentiments('nrc') %>% 
+  filter(word != "white") %>% #white is neutral in this context
+  inner_join(unigram) %>% 
+  add_count(sentiment, 
+            sort = T) %>% 
+  inner_join(user_rank)
 
+unigram_nrc_user<- get_sentiments('nrc') %>% 
+  filter(word != "white") %>% #white is neutral in this context
+  inner_join(unigram) %>% 
+  group_by(user) %>% 
+  add_count(sentiment, 
+            sort = T) %>% 
+  inner_join(user_rank)
 
+# Binary positive or negative
+unigram_bing <- inner_join(unigram, get_sentiments("bing")) %>% 
+  add_count(sentiment,
+            name = "n_sent") %>% 
+  add_count(sentiment,
+            index = id,
+            name = "n_sent_id") %>% 
+  add_count(id, 
+            name = "num_words") %>% 
+  inner_join(user_rank)
 
-####################
-
-
-##Still having cleaning issues here
-bigram <- ladies %>% 
-  mutate(text_clean = str_replace_all(text_nopunct, 
-                                      "[Nn]ational\\s[Ss]ocialism[A-z]*", 
-                                      "ns") %>% 
-           str_replace_all("[Nn]ational\\s[Ss]ocialist[A-z]*",
-                           "ns") %>% 
-           str_replace_all("[Pp]regnant[A-z]*",
-                           "pregnant") %>% 
-           str_replace_all("[Pp]regnant\\s[Tt]read[A-z]*",
-                           "pregnant thread") %>%  
-           str_replace_all("[A-z]*[Mm]ein(\\s)*[Kk]ampf[A-z]*",
-                           "meinkampf") %>% 
-           str_replace_all("[Nn]ationalis[tm]",
-                           "national") %>% 
-           str_replace_all("[A-z]*([Tt]hird|3rd)(\\s)*[Rr]eich[A-z]*",
-                           "3rd_reich") %>% 
-           str_replace_all("[Nn]azi",
-                           "nazi") %>%
-  rm_stopwords(Top200Words, 
-               separate = FALSE)) %>%
-  unnest_tokens(bigram, 
-                text_clean,
-                token = "ngrams", 
-                n = 2) %>% 
-  select(user, 
-         time,
-         date,
-         bigram,
-         id)
-
-#Use the tidytext way on the stop-word-removed data using the qdap approach. Similar Results. 
-bigram_split <- bigram %>% 
-  separate(bigram, c("word1", 
-                     "word2"), 
-           sep = " ",
+# -5 to 5 negative to positive
+unigram_afinn <- inner_join(unigram, get_sentiments("afinn"))  %>% 
+  group_by(id) %>% 
+  separate(date,
+           into = c('m', 'd', 'y'),
+           sep = '-',
            remove = F) %>% 
-  filter(!word1 %in% stop_words$word) %>% 
-  filter(!word1 %in% stop_words$word) %>% 
-  filter(!is.na(bigram)) %>% 
-  count(bigram, sort = T) %>% 
-  mutate(bigram = reorder(bigram, n))
-
-#Count the frequency of bigrams and order them by frequency. 
-bigram_sorted <- bigram %>% 
-  count(bigram, sort = T) %>% 
-  mutate(bigram = reorder(bigram, n))
-
-bigram_sorted <- rename(bigram_sorted, n_freq = n)
+  mutate(net_score = sum(value),
+         date = as.Date(ISOdate(y, m, d))) %>% 
+  select(user,
+         date, 
+         id,
+         word,
+         value,
+         net_score) %>% 
+  inner_join(user_rank)
