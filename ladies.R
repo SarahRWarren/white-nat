@@ -330,3 +330,5 @@ clean_white <- white_forum %>%
                             "\\w+"))
 
 write_rds(clean_white, "data/clean_ladies_white.Rds")
+
+write.csv(ladies, "data/ladies.csv")
