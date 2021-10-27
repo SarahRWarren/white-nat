@@ -1,8 +1,8 @@
 library(stm)
 library(tidyverse)
 
-df <- read_rds("data/ideo_philo.Rds")
-write.csv(df, "data/ideo_philo.csv")
+#df <- read_rds("data/ideo_philo.Rds")
+#write.csv(df, "data/ideo_philo.csv")
 all <- read_csv("data/ideo_philo.csv")
 
 for_analysis <- all %>%
@@ -11,7 +11,7 @@ for_analysis <- all %>%
 
 processed <- textProcessor(for_analysis$documents, metadata = for_analysis)
 out <- prepDocuments(processed$documents, processed$vocab, processed$meta,
-                     lower.thresh = 15)
+                     lower.thresh = 75)
 docs <- out$documents
 vocab <- out$vocab
 meta <-out$meta
