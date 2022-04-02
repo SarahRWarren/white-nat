@@ -9,3 +9,5 @@ ns <- read_rds("data/clean_national_socialism.Rds") %>%
 
 ideo_philo <- rbind(wn, conservative, ns)
 write_rds(ideo_philo, "data/ideo_philo.Rds")
+write_csv(ideo_philo, "data/ideo_philo.csv")
+

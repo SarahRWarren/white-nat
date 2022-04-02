@@ -1,0 +1,54 @@
+---
+title: "When the Party Decides, do they Pick a Winner?"
+author:
+  - Rob Lytle
+  - Sarah Warren
+date: "4/18/2021"
+output: pdf_document
+documentclass: paper
+bibliography: references.bib
+fontsize: 12
+abstract: "When do parties endorse candidates during primary elections? And, conditional upon endorsing, how do they choose a candidate to endorse? In this paper, we present a novel model of party endorsements and derive testable implications from it. Importantly, we argue that endorsements are, in fact, a costly signal and that parties treat candidates as agents. In this model, parties deliver an endorsement to the candidate that minimizes the difference between the candidate and the party and the candidate and the voter---balancing the party’s programmatic preferences with candidate electability. We supplement this model with a time-seriesanalysis of party supported congressional primarycandidates’ general election success, relative to their non-supported opponents. Using a combination of Federal Elections Commission contributions data and complementary election returns we seek to answer the question: “When the party decides, do they decide on a winner?"
+header-includes:
+- \usepackage[margin=1.2in]{geometry}
+- \usepackage{caption}
+- \usepackage{amsmath}
+- \usepackage{mathrsfs}
+- \usepackage{float}
+- \usepackage{natbib}
+- \bibliographystyle{apsr}
+- \usepackage{graphicx}
+- \graphicspath{ {../fig/} }
+- \usepackage{setspace}
+- \usepackage[super]{nth}
+- \usepackage{booktabs}
+- \usepackage{makecell}
+- \usepackage{amsmath}
+- \usepackage{dcolumn}
+- \usepackage{hyperref}
+- \usepackage{inputenc}
+
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, eval = TRUE)
+
+library(tidyverse)
+library(tidymodels)
+library(ggthemes)
+library(gt)
+library(gtsummary)
+library(ggeffects)
+library(cowplot)
+
+theme_set(theme_minimal())
+dodge <- position_dodge(width=0.75)
+set.seed(1234)
+
+#function to quickly create a new column of md formatted text with significance stars from a tidy(lm()) output.
+add_stars <- function(.) {	mutate(., estimate_stars = case_when(p.value > .1 ~ as.character(estimate),
+															p.value <= .1 & p.value > .05 ~ paste0("__",estimate, "*__"),
+															p.value <= .05 & p.value > .01 ~ paste0("__", estimate, "**__"),
+															p.value <= .01 ~ paste0("__", estimate, "***__")))
+}
+```
