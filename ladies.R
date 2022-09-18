@@ -6,7 +6,10 @@ library(xml2)
 library(rvest)
 library(tidyverse)
 
-##Notes: If you want to use this code, clear your cookies between runs; solves the error "error in open.connection(x, "rb") : cannot open the connection scraping"
+##Notes: If you want to use this code, 
+#clear your cookies between runs; 
+#solves the error "error in open.connection(x, "rb") : 
+#cannot open the connection scraping"
 
 
 ###LADIES

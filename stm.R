@@ -145,6 +145,9 @@ gamma_terms %>%
   kable(digits = 3, 
         col.names = c("Topic", "Expected topic proportion", "Top 7 terms"))
 
+
+
+
 all <- df
 
 user_rank <- all %>%
@@ -191,14 +194,121 @@ unigram_count_forum <- unigram %>%
          word_stem = ifelse(word == 'Hitler' | word == 'Nazi' | word == 'white',
                             word,
                             word_stem)) %>%
-  subset(n > 10)
+  subset(n > 500)
+
+ggplot(unigram_count_forum, aes(x=n, y=word)) + 
+  geom_col() + theme_bw() +
+ scale_x_continuous(limit=c(0,5100),
+                     breaks = c(0, 500,
+                                1000,
+                               1500,
+                              2000, 2500, 3000, 
+                              3500, 4000, 45,000, 5000),
+                  expand = c(0,0)) +
+  #theme(axis.text = element_text(size=5)) +
+  theme(axis.text.x = element_text(angle = 90)) +
+  labs(title = "Unigrams Used More Than 500 Times",
+       x= "Freqeuncy",
+       y="",
+       fill = "Frequency (High-Low)")
+ggsave("figs/unigram_id.png", height=12, width = 12)
 
 
-unigram_count <- unigram %>% 
-  count(word, sort = T) %>% 
-  mutate(word = reorder(word, n)) %>%  
-  mutate(word_stem = wordStem(word),
-         word_stem = ifelse(word == 'Hitler' | word == 'Nazi' | word == 'white',
-                            word,
-                            word_stem)) %>%
-  subset(n > 10)
+
+##sentiment analysis
+library(qdap)
+library(Rcpp)
+data('Top200Words')
+
+unigram_nrc_user<- get_sentiments('nrc') %>% 
+  filter(word != "white") %>% #white is neutral in this context
+  inner_join(unigram) %>% 
+  group_by(user) %>% 
+  add_count(sentiment, 
+            sort = T) %>% 
+  inner_join(user_rank)
+
+unigram_nrc_user<- get_sentiments('nrc') %>% 
+  filter(word != "white") %>% #white is neutral in this context
+  inner_join(unigram) %>% 
+  group_by(user) %>% 
+  add_count(sentiment, 
+            sort = T)
+
+##trying
+terms <- read.table(text=top_terms$terms,col.names=c('Term1', "Term2",
+                                               'Term3', 'Term4', 'Term5',
+                                               'Term6', 'Term7'))
+terms$topic <- 1:nrow(terms)
+
+t1 <- terms %>%
+  select(topic, Term1)
+t1<- rename(t1, word = Term1)
+t2 <- terms %>%
+  select(topic, Term2)
+t2<- rename(t2, word = Term2)
+t3 <- terms %>%
+  select(topic, Term3)
+t3<- rename(t3, word = Term3)
+t4 <- terms %>%
+  select(topic, Term4)
+t4<- rename(t4, word = Term4)
+t5 <- terms %>%
+  select(topic, Term5)
+t5<- rename(t5, word = Term5)
+t6 <- terms %>%
+  select(topic, Term6)
+t6<- rename(t6, word = Term6)
+t7 <- terms %>%
+  select(topic, Term7)
+t7<- rename(t7, word = Term7)
+
+words_topics <- rbind(t1, t2, t3, t4, t5, t6, t7)
+words_topics$topic <- as.character(words_topics$topic)
+class(words_topics$topic)
+
+unigram_nrc_topic<- get_sentiments('nrc') %>% 
+  inner_join(words_topics) %>% 
+  group_by(topic) %>% 
+  add_count(sentiment, 
+            sort = T)
+
+ggplot(unigram_nrc_topic, aes(x=sentiment, fill=topic)) +
+  geom_bar() + theme_bw() +
+  labs(title = "NRC Sentiment Across Topics",
+       x = "",
+       y = "Frequency",
+       fill = "NRC Sentiment")
+ggsave("figs/sentiment_freq_topic.png", width=10, height=10)
+
+unigram_nrc <- get_sentiments('nrc') %>% 
+  inner_join(unigram) %>% 
+  add_count(sentiment, 
+            sort = T)
+
+ggplot(unigram_nrc, aes(x=sentiment, fill=forum)) +
+  geom_bar() + theme_bw() +
+  labs(title = "NRC Sentiment Across Posts",
+       x = "",
+       y = "Frequency",
+       fill = "Forum")
+ggsave("figs/sentiment_freq_all_words.png", width=10)
+
+unigram_time<- get_sentiments('nrc') %>% 
+  inner_join(unigram) %>% 
+  group_by(date) %>% 
+  add_count(sentiment, 
+            sort = T)
+
+unigram_time <- unigram_time %>%
+  select(date, sentiment, forum, n)
+
+ggplot(unigram_time, aes(x=date, y=n, fill = sentiment)) +
+  geom_col() + theme_minimal() +
+  facet_wrap(vars(sentiment), ncol = 5) +
+  theme(axis.text.x = element_text(angle=90, vjust = 1)) +
+  labs(title = "NRC Sentiment Across Posts",
+       x = "",
+       y = "Frequency",
+       fill = "Sentiment")
+ggsave("figs/sentiment_freq_time", width = 10, height = 10)
